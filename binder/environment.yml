@@ -1,0 +1,25 @@
+name: base
+# Order determines the ranking of search
+channels:              
+ - conda-forge       # Generic packages
+ - bioconda          # Bioinformatics related packages
+ - defaults          # Stable but older packages
+ 
+ # Lock the version of packages which are required to have an updated version
+dependencies:
+ - r-base=3.5.3      # Version of R
+ - python=3.7.7      # Version of Python
+ - r-dplyr
+ - r-ggplot2
+ - r-reshape2
+ - r-tidyverse
+ - r-plotly
+ - r-stringr
+ - pip
+ - pip:              # Python package manager to install python packages
+     - plotly
+     - pandas
+     - matplotlib
+     - scikitlearn
+     - numpy
+ 
