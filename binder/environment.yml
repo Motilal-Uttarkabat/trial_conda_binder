@@ -20,6 +20,6 @@ dependencies:
      - plotly
      - pandas
      - matplotlib
-     - scikitlearn
+     - scikit-learn
      - numpy
  
