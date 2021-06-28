@@ -1,3 +1,4 @@
 # trial_conda_binder
 Basic Conda based Binder
-[![Binder](https://binder.pangeo.io/badge_logo.svg)](https://notebooks.gesis.org/user/uttarkabat.1@osu.edu/tree/)
+Python 3.7 and R 3.5.3
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Motilal-Uttarkabat/trial_conda_binder/tree/py37_r353)
