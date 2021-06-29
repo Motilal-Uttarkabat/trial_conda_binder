@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.bash_history
+.bash_logout
+.bashrc
+.conda/
+.config/
+.gitconfig
+.jupyter-server-log.txt
+.local/
+.profile
