@@ -5,6 +5,7 @@ import pandas as pd                     # import pandas for reading and writing 
 import sys
 
 arg = sys.argv[1]
+# print("Reading {}".format(arg)
 df = pd.read_csv(arg)                   # importing data from csv file with name from input argument
 
 x = df.x                                # Assigning x values from the data
