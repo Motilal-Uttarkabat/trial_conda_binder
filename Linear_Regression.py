@@ -6,7 +6,7 @@ import sys
 import os.path as path
 
 arg = sys.argv[1]
-print("Reading {}".format(arg)
+print("Reading {}".format(arg))
 df = pd.read_csv(arg)                   # importing data from csv file with name from input argument
 name = path.splitext(arg)
 
@@ -16,6 +16,7 @@ y = df.y                                # Assigning y values from the data
 plt.plot(x,y,'ro')
 plt.xlabel('x'); plt.ylabel('y')
 plt.savefig("{}_py_orig.png".format(name[0]))              # Saving output of the plot to a png file
+print("Printing {}_py_orig.png".format(name[0]))
 
 from scipy import stats                                                                     # import statistics tool from scipy
 slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)                         # calling linregress function
@@ -24,3 +25,5 @@ plt.plot(x,x*slope+intercept,'b',label='Linear fit, r_value={:.2f}'.format(r_val
 plt.xlabel('x'); plt.ylabel('y')
 plt.legend()
 plt.savefig("{}_py_lm.png".format(name[0]))              # Saving output of the plot to a png file
+print("Printing {}_py_lm.png".format(name[0]))
+print("Done")
