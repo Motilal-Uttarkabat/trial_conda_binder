@@ -15,6 +15,9 @@ dependencies:
  - r-tidyverse
  - r-plotly
  - r-stringr
+ - r-shiny
+ - r-shinythemes
+ - r-readr
  - pip
  - pip:              # Python package manager to install python packages
      - plotly
