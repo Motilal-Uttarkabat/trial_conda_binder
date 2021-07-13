@@ -1,6 +1,7 @@
 # Create Shiny app ----
 library(shiny)
 library(ggplot2)
+library(ggpubr)
 # Defining UI for the application 
 ui <- fluidPage(
     titlePanel("Linear Regression"),      # Title of the app output
@@ -101,7 +102,13 @@ server <- function(input, output) {
     })
     
     output$scatterPlot <-renderPlot({
-        ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')})
+        ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(method = "lm", formula = y ~ poly(x, input$Poly), size = 1)+stat_regline_equation(
+            formula = y ~ poly(x, input$Poly),
+            label.x.npc = "right",
+            label.y.npc = "top",
+            output.type = "expression",
+            geom = "text"
+        )})
 }
 # Run the application 
 shinyApp(ui = ui, server = server)
