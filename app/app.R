@@ -1,10 +1,10 @@
 # Create Shiny app ----
 library(shiny)
 library(ggplot2)
-library(ggmisc)
+library(ggpmisc)
 # Defining UI for the application 
 ui <- fluidPage(
-    titlePanel("Linear Regression"),      # Title of the app output
+    titlePanel("Polynomial Regression"),      # Title of the app output
     
     # Sidebar layout with input and output definitions ----
     sidebarLayout(
@@ -13,7 +13,7 @@ ui <- fluidPage(
         sidebarPanel(
             
             sliderInput("Poly",
-                        "Polynomial Fitting Order:",
+                        "Order of polynomial model:",
                         min = 1,
                         max = 10,
                         value = 1),
@@ -100,16 +100,16 @@ server <- function(input, output) {
         df
     })
     
-    output$scatterPlot <-renderPlot({
-        my.formula <- y ~ poly(x, input$Poly)
-        ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(
-            method = "lm",
-            formula = my.formula,
-            size = 1)+stat_poly_eq(
-                formula = my.formula,
-                aes(label=paste(..eq.label.., ..rr.label.., sep = "~~~")),
-                geom="expression", parse = T, label.y="top", label.x="left")
-        })
+    output$scatterPlot <- renderPlot({
+            ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(
+                method = "lm",
+                formula = y ~ poly(x, input$Poly, raw = T),
+                size = 1,
+                se=T)+stat_poly_eq(
+                    formula = y ~ poly(x, input$Poly, raw = T),
+                    aes(label=paste(..eq.label.., ..rr.label.., sep = "~~~")),
+                    parse = T, label.y="top", label.x="left")
+    })
 }
 # Run the application 
 shinyApp(ui = ui, server = server)
