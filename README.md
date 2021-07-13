@@ -1,4 +1,3 @@
 # trial_conda_binder
-Basic Conda based Binder
-Python 3.7 and R 3.5.3
+Shiny App for Polynomial (including Linear) Regression
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Motilal-Uttarkabat/trial_conda_binder.git/shiny)
