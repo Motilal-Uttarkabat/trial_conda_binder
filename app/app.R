@@ -1,8 +1,11 @@
 # Create Shiny app ----
+# Importing required library for plotting and shiny
 library(shiny)
 library(ggplot2)
 library(ggpmisc)
-# Defining UI for the application 
+# Defining UI for the application
+# The app uses code (slightly modified) for reading a csv to shiny app from Source- https://shiny.rstudio.com/gallery/file-upload.html
+
 ui <- fluidPage(
     titlePanel("Polynomial Regression"),      # Title of the app output
     
@@ -95,17 +98,19 @@ server <- function(input, output) {
         }
     })
     
+    # Parsing data from csv to a Reactive dat() for plotting
     dat <- reactive({
         df <- read.csv(input$file1$datapath,header = input$header,sep = input$sep,quote = input$quote)
         df
     })
     
+    # Scatter plot with regressional analysis using stat_smooth (ggplot2) and stat_poly_eq (from ggpmisc)
     output$scatterPlot <- renderPlot({
-            ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(
-                method = "lm",
-                formula = y ~ poly(x, input$Poly, raw = T),
-                size = 1,
-                se=T)+stat_poly_eq(
+            ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(                                    # Scatter Plot 
+                method = "lm",                                                                                  # Fitting/smoothing to a polynomial fit
+                formula = y ~ poly(x, input$Poly, raw = T),                                                     # Formula for the polynomial fit from input
+                size = 1,                                                                                       # Line width of the fit
+                se=T)+stat_poly_eq(                                                                             # Function of equation and r squared value
                     formula = y ~ poly(x, input$Poly, raw = T),
                     aes(label=paste(..eq.label.., ..rr.label.., sep = "~~~")),
                     parse = T, label.y="top", label.x="left")
