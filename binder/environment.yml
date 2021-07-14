@@ -17,6 +17,7 @@ dependencies:
  - r-stringr
  - r-shiny
  - r-shinythemes
+ - r-ggpmisc
  - r-readr
  - pip
  - pip:              # Python package manager to install python packages
