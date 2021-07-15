@@ -111,6 +111,15 @@ server <- function(input, output) {
     output$Export <- renderText(
         paste("Download")
     )
+    
+    output$contents <- renderTable({
+        if(input$disp == "head") {
+            return(head(dataInput()))
+        }
+        else {
+            return(dataInput())
+        }
+    })
 }
 # Run the application 
 shinyApp(ui = ui, server = server)
