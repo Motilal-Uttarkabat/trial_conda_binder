@@ -7,7 +7,7 @@
 #
 
 library(shiny)
-
+library(plotly)
 # Define UI for application that draws a histogram
 ui <- fluidPage(
     
@@ -50,20 +50,22 @@ ui <- fluidPage(
             tags$hr(),
             
             # Input: Select number of rows to display ----
-            radioButtons("disp", "Data Options",
+            radioButtons("disp", "Display Data",
                          choices = c(Head = "head",
                                      All = "all"),
                          selected = "head"),
             actionButton("lm", "Linear Fit"),
+            htmlOutput("RSquared"),
+            htmlOutput("Slope"),
+            htmlOutput("Intercept")
         ),
         
         # Show a plot of the generated distribution
         mainPanel(
-            plotOutput("distPlot"),
-            plotOutput("fitPlot"),
-            htmlOutput("RSquared"),
-            htmlOutput("Slope"),
-            htmlOutput("Intercept"),
+            plotlyOutput("ScatterPlot"),
+            tags$hr(),
+            tags$hr(),
+            plotlyOutput("fitPlot"),
             tableOutput("contents")
         )
     )
@@ -82,30 +84,32 @@ server <- function(input, output) {
     })
     
     Line <- eventReactive(input$lm,{lm(dataInput()$y ~ dataInput()$x)})
-    
-    output$distPlot <- renderPlot({
-        plot(dataInput()$x, dataInput()$y, main="Scatter Plot",xlab="X", ylab="Y", pch=19)
+
+    output$ScatterPlot <- renderPlotly({
+        plot <- plot_ly(dataInput(), x = ~x, y = ~y, type = 'scatter', mode = 'markers')%>%
+            layout(title="Scatter Plot")
     })
     
-    output$fitPlot <- renderPlot({
-        plot(dataInput()$x, dataInput()$y, main="Linear Regression",xlab="X", ylab="Y", pch=19)
-        abline(Line())
+    output$fitPlot <- renderPlotly({
+        plot <- plot_ly(dataInput(), x = ~x, y = ~y, type = 'scatter', mode = 'markers') %>% 
+            add_trace(dataInput(), x = ~x, y = fitted(Line()), mode = "lines", showlegend = F) %>%
+                layout(title="Linear Fit")
     })
-   
+    
     output$RSquared <- renderUI({
         str1 <- paste("R", tags$sup(2),"-", sep = "")
-        str2 <- paste(summary(Line())$r.squared)
+        str2 <- paste(format(round(summary(Line())$r.squared, 3)))
         HTML(paste(str1, str2))
     })
     output$Slope <- renderUI({
         str1 <- paste("Slope-")
-        str2 <- paste(summary(Line())$coefficients[2])
+        str2 <- paste(format(round(summary(Line())$coefficients[2], 3)))
         HTML(paste(str1, str2))
     })
     
     output$Intercept <- renderUI({
         str1 <- paste("Intercept-")
-        str2 <- paste(summary(Line())$coefficients[1])
+        str2 <- paste(format(round(summary(Line())$coefficients[1], 3)))
         HTML(paste(str1, str2))
     })
     
