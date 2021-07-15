@@ -17,9 +17,9 @@ ui <- fluidPage(
             
             sliderInput("Poly",
                         "Order of polynomial model:",
-                        min = 1,
+                        min = 0,
                         max = 10,
-                        value = 1),
+                        value = 0),
             
             # Input: Select a file ----
             fileInput("file1", "Choose CSV File",
@@ -56,7 +56,6 @@ ui <- fluidPage(
                          choices = c(Head = "head",
                                      All = "all"),
                          selected = "head")
-            
         ),
         
         # Main panel for displaying outputs ----
@@ -100,6 +99,7 @@ server <- function(input, output) {
     
     # Parsing data from csv to a Reactive dat() for plotting
     dat <- reactive({
+        req(input$file1)
         df <- read.csv(input$file1$datapath,header = input$header,sep = input$sep,quote = input$quote)
         df
     })
