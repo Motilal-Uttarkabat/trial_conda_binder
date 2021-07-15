@@ -17,9 +17,9 @@ ui <- fluidPage(
             
             sliderInput("Poly",
                         "Order of polynomial model:",
-                        min = 1,
+                        min = 0,
                         max = 10,
-                        value = 1),
+                        value = 0),
             
             # Input: Select a file ----
             fileInput("file1", "Choose CSV File",
@@ -33,20 +33,13 @@ ui <- fluidPage(
             
             # Input: Checkbox if file has header ----
             checkboxInput("header", "Header", TRUE),
-            
+            checkboxInput("se", "Confidence Interval", TRUE),
             # Input: Select separator ----
             radioButtons("sep", "Separator",
                          choices = c(Comma = ",",
                                      Semicolon = ";",
                                      Tab = "\t"),
                          selected = ","),
-            
-            # Input: Select quotes ----
-            radioButtons("quote", "Quote",
-                         choices = c(None = "",
-                                     "Double Quote" = '"',
-                                     "Single Quote" = "'"),
-                         selected = '"'),
             
             # Horizontal line ----
             tags$hr(),
@@ -55,8 +48,13 @@ ui <- fluidPage(
             radioButtons("disp", "Display",
                          choices = c(Head = "head",
                                      All = "all"),
-                         selected = "head")
-            
+                         selected = "head"),
+            tags$hr(),
+            textOutput("Export"),
+            numericInput("width", "Width (inches)", value = 7, min = 1, max = 20),
+            numericInput("height", "Height (inches)", value = 7, min = 1, max = 20),
+            numericInput("dpi", "DPI", value = 150, min = 72, max = 300),
+            downloadButton('Download')
         ),
         
         # Main panel for displaying outputs ----
@@ -72,49 +70,47 @@ ui <- fluidPage(
 # Logic for output of a scatter plot with linear regression from a csv input
 
 server <- function(input, output) {
-    output$contents <- renderTable({
+
+    # Reactive dataframe variable from csv input
+    dataInput <- reactive({
         req(input$file1)
-        
-        # when reading semicolon separated files,
-        # having a comma separator causes `read.csv` to error
-        tryCatch(
-            {
-                df <- read.csv(input$file1$datapath,
-                               header = input$header,
-                               sep = input$sep,
-                               quote = input$quote)
-            },
-            error = function(e) {
-                # return a safeError if a parsing error occurs
-                stop(safeError(e))
-            }
-        )
-        
-        if(input$disp == "head") {
-            return(head(df))
-        }
-        else {
-            return(df)
-        }
+        df <- read.csv(input$file1$datapath,
+                       header = input$header,
+                       sep = input$sep,
+                       quote = input$quote)
+        return(df)
     })
     
     # Parsing data from csv to a Reactive dat() for plotting
     dat <- reactive({
-        df <- read.csv(input$file1$datapath,header = input$header,sep = input$sep,quote = input$quote)
+        req(input$file1)
+        df <- read.csv(input$file1$datapath,header = input$header,sep = input$sep)
         df
     })
     
     # Scatter plot with regressional analysis using stat_smooth (ggplot2) and stat_poly_eq (from ggpmisc)
-    output$scatterPlot <- renderPlot({
-            ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(                                    # Scatter Plot 
-                method = "lm",                                                                                  # Fitting/smoothing to a polynomial fit
-                formula = y ~ poly(x, input$Poly, raw = T),                                                     # Formula for the polynomial fit from input
-                size = 1,                                                                                       # Line width of the fit
-                se=T)+stat_poly_eq(                                                                             # Function of equation and r squared value
-                    formula = y ~ poly(x, input$Poly, raw = T),
-                    aes(label=paste(..eq.label.., ..rr.label.., sep = "~~~")),
-                    parse = T, label.y="top", label.x="left")
+    output$scatterPlot <- renderPlot({figure()})
+        
+    figure <- reactive ({
+        ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(                                    # Scatter Plot 
+            method = "lm",                                                                                  # Fitting/smoothing to a polynomial fit
+            formula = y ~ poly(x, input$Poly, raw = T),                                                     # Formula for the polynomial fit from input
+            size = 1,                                                                                       # Line width of the fit
+            se=input$se)+stat_poly_eq(                                                                             # Function of equation and r squared value
+                formula = y ~ poly(x, input$Poly, raw = T),
+                aes(label=paste(..eq.label.., ..rr.label.., sep = "~~~")),
+                parse = T, label.y="top", label.x="left")
     })
+    
+    output$Download <- downloadHandler(
+    filename = function() { paste(tools::file_path_sans_ext(input$file1), 'order', input$Poly, '.png', sep='') },
+    content = function(file) {
+        ggsave(file, plot = figure(), width = input$width, height = input$height, dpi = input$dpi, units = "in", device = "png")
+    })
+    
+    output$Export <- renderText(
+        paste("Download")
+    )
 }
 # Run the application 
 shinyApp(ui = ui, server = server)
