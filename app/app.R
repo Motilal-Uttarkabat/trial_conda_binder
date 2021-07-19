@@ -61,6 +61,7 @@ ui <- fluidPage(
         mainPanel(
             # Output scatter Plot with regression
             plotOutput("scatterPlot"),
+            plotOutput("residualPlot"),
             tableOutput("contents")
         )
     )
@@ -89,8 +90,9 @@ server <- function(input, output) {
     })
     
     # Scatter plot with regressional analysis using stat_smooth (ggplot2) and stat_poly_eq (from ggpmisc)
-    output$scatterPlot <- renderPlot({figure()})
-        
+    output$scatterPlot <- renderPlot({figure()},height = 400, width = 600)
+    output$residualPlot <- renderPlot({residual()},height = 200, width = 600)    
+    
     figure <- reactive ({
         ggplot(dat(),aes(x=x,y=y))+geom_point(colour='red')+stat_smooth(                                    # Scatter Plot 
             method = "lm",                                                                                  # Fitting/smoothing to a polynomial fit
@@ -102,6 +104,14 @@ server <- function(input, output) {
                 parse = T, label.y="top", label.x="left")
     })
     
+    residual <- reactive ({
+        req(input$Poly >= 1)
+        model <- lm(dat()$y ~ poly(dat()$x, input$Poly, raw = T))
+        ggplot(dat(),aes(x=x,y=resid(model)))+geom_point(colour='green') +
+            labs(x = "X", y = "Residuals", 
+                 title = paste("Residuals Plot"))
+    })
+    
     output$Download <- downloadHandler(
     filename = function() { paste(tools::file_path_sans_ext(input$file1), 'order', input$Poly, '.png', sep='') },
     content = function(file) {
@@ -111,15 +121,6 @@ server <- function(input, output) {
     output$Export <- renderText(
         paste("Download")
     )
-    
-    output$contents <- renderTable({
-        if(input$disp == "head") {
-            return(head(dataInput()))
-        }
-        else {
-            return(dataInput())
-        }
-    })
 }
 # Run the application 
 shinyApp(ui = ui, server = server)
