@@ -19,6 +19,8 @@ dependencies:
  - r-shinythemes
  - r-ggpmisc
  - r-readr
+ - r-orca
+ - r-plotly-orca
  - pip
  - pip:              # Python package manager to install python packages
      - plotly
