@@ -66,6 +66,7 @@ ui <- fluidPage(
             tags$hr(),
             tags$hr(),
             plotlyOutput("fitPlot"),
+            plotlyOutput("residualPlot"),
             tableOutput("contents")
         )
     )
@@ -94,6 +95,11 @@ server <- function(input, output) {
         plot <- plot_ly(dataInput(), x = ~x, y = ~y, type = 'scatter', mode = 'markers') %>% 
             add_trace(dataInput(), x = ~x, y = fitted(Line()), mode = "lines", showlegend = F) %>%
                 layout(title="Linear Fit")
+    })
+    
+    output$residualPlot <- renderPlotly({
+        plot <- plot_ly(dataInput(), x = ~x, y = resid(Line()), type = 'scatter', mode = 'markers') %>% 
+            layout(title="Residuals (linear model)")
     })
     
     output$RSquared <- renderUI({
