@@ -1,2 +1,3 @@
 install.packages("shiny")
-install.packages("plotly")
+install.packages("ggplot2")
+install.packages("ggpmisc")
