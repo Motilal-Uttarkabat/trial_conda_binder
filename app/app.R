@@ -1,14 +1,6 @@
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(plotly)
-# Define UI for application that draws a histogram
+# Define UI for application that draws a scatter from a csv
 ui <- fluidPage(
     
     # Application title
@@ -120,10 +112,6 @@ server <- function(input, output) {
     })
     
     output$contents <- renderTable({
-        
-        # input$file1 will be NULL initially. After the user selects
-        # and uploads a file, head of that data file by default,
-        # or all rows if selected, will be shown.
         if(input$disp == "head") {
             return(head(dataInput()))
         }
